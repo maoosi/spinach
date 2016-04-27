@@ -1,0 +1,59 @@
+{
+    "name": "xxx",
+    "version": "1.0.0",
+    "description": "xxx",
+
+    "homepage": "https://xxx",
+    "author": "XXX <xxx@xxx.com>",
+    "license": "UNLICENSED",
+
+    "repository": {
+        "type": "git",
+        "url": "https://xxx.git"
+    },
+
+    "bugs": {
+        "url": "https://xxx.git/issues"
+    },
+
+    "devDependencies": {
+
+        "autoprefixer": "*",
+        "babel-preset-es2015-rollup": "*",
+        "browser-sync": "*",
+        "cssnano": "*",
+        "del": "*",
+        "glob-all": "*",
+        "node-notifier": "*",
+        "sass-module-importer": "*",
+
+        "eslint-config-standard": "*",
+        "eslint-plugin-promise": "*",
+        "eslint-plugin-standard": "*",
+
+        "gulp": "*",
+        "gulp-changed": "*",
+        "gulp-data": "*",
+        "gulp-file-include": "*",
+        "gulp-htmlmin": "*",
+        "gulp-imagemin": "*",
+        "gulp-nunjucks": "*",
+        "gulp-plumber": "*",
+        "gulp-postcss": "*",
+        "gulp-rename": "*",
+        "gulp-sass": "*",
+        "gulp-sass-bulk-import": "*",
+        "gulp-sourcemaps": "*",
+
+        "rollup": "*",
+        "rollup-plugin-babel": "*",
+        "rollup-plugin-commonjs": "*",
+        "rollup-plugin-eslint": "*",
+        "rollup-plugin-node-resolve": "*",
+        "rollup-plugin-uglify": "*",
+
+        "gridle": "*",
+        "normalize.css": "*"
+
+    }
+}

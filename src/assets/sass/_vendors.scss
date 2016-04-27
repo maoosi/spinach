@@ -1,0 +1,26 @@
+
+/* ===============
+  Normalize - Alternative to CSS resets
+  https://necolas.github.io/normalize.css/
+=============== */
+
+@import 'normalize.css';
+
+
+/* ===============
+  Gridle - Grid system
+  http://gridle.org
+=============== */
+
+@import 'gridle';
+
+@include gridle_setup((
+    context : $grid-columns,
+    gutter-width : $grid-gutter
+));
+
+@each $breakpoint, $width in $breakpoints {
+    @include gridle_register_state($breakpoint, (
+        max-width : $width
+    ));
+}
