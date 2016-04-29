@@ -66,17 +66,24 @@ gulp.task('html', ['images'], () => {
     return gulp.src(paths.views + '/*.{html,twig}')
         .pipe(plumber({ errorHandler: onError }))
         .pipe(data(function(file) {
-			return require(paths.data + '/' + path.basename(file.path, path.extname(file.path)) + '.json');
+			let pageName = path.basename(file.path, path.extname(file.path))
+			let globalData = fs.readFileSync(paths.data + '/_.json', 'utf-8') || {}
+			let pageData = fs.readFileSync(paths.data + '/' + pageName + '.json', 'utf-8') || {}
+			let jsonData = {
+				'_': JSON.parse(globalData),
+				pageName: JSON.parse(pageData)
+			}
+			return jsonData
 	    }))
         .pipe(nunjucks.compile())
         .pipe(include({ prefix: '@', basepath: paths.dist + '/images/' }))
-        .pipe(htmlmin({ collapseWhitespace: true, removeComments: true }))
+        .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true, removeComments: true }))
 		.pipe(rename(function (path) {
 			if (path.basename == 'home') {
 				path.basename = 'index'
 			}
 			path.extname = '.html'
-			return path;
+			return path
 		}))
         .pipe(gulp.dest(paths.dist))
 })
@@ -119,7 +126,7 @@ gulp.task('js', () => {
 	            let files = bundle.generate(write)
 
 	            // write the files to dist
-	            fs.writeFileSync(paths.dist + '/js/' + path.basename(file), files.code)
+	            fs.writeFileSync(paths.dist + '/js/' + path.basename(file).replace('.js', '.min.js'), files.code)
 	            fs.writeFileSync(paths.dist + '/maps/' + path.basename(file) + '.map', files.map.toString())
 
 	        })
@@ -140,7 +147,6 @@ gulp.task('sass', () => {
 		.pipe(sass({ importer: moduleImporter() }))
 		.pipe(sass())
 		.pipe(postcss([ prefixer({ browsers: 'last 2 versions' }) ]))
-		.pipe(gulp.dest(paths.dist + '/css'))
 		.pipe(postcss([ cssnano({ safe: true }) ]))
 		.pipe(rename(function (path) {
 			path.extname = '.min.css'
@@ -157,9 +163,9 @@ gulp.task('sass', () => {
 gulp.task('images', () => {
 	return gulp.src(paths.assets + '/images/**/*.{gif,jpg,png,svg}')
 		.pipe(plumber({ errorHandler: onError }))
-		.pipe(changed(paths.assets + '/images'))
-		.pipe(imagemin({ progressive: true, interlaced: true }))
-		.pipe(gulp.dest(paths.dist + '/img'))
+		.pipe(changed(paths.dist + '/images'))
+		.pipe(imagemin())
+		.pipe(gulp.dest(paths.dist + '/images'))
 })
 
 
@@ -218,14 +224,14 @@ const options = {
     }
 }
 
-gulp.task('server', () => sync(options))
+gulp.task('server', () => setTimeout(function(){ sync(options) }, 1000))
 
 
 
 // WATCH
 
 gulp.task('watch', () => {
-    gulp.watch(paths.views + '/**/*.{html,twig}', ['html', reload])
+    gulp.watch([paths.views + '/**/*.{html,twig}', paths.data + '/**/*.json'], ['html', reload])
     gulp.watch(paths.assets + '/sass/**/*.scss', ['sass', reload])
     gulp.watch(paths.assets + '/js/**/*.js', ['js', reload])
     gulp.watch(paths.assets + '/images/**/*.{gif,jpg,png,svg}', ['images', reload])
@@ -239,6 +245,7 @@ gulp.task('build', ['clean'], () => {
     fs.mkdirSync(paths.dist)
     fs.mkdirSync(paths.dist + '/js')
     fs.mkdirSync(paths.dist + '/maps')
+	fs.mkdirSync(paths.dist + '/images')
     gulp.start('html', 'sass', 'js', 'images', 'fonts', 'favicon')
 })
 
