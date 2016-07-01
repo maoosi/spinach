@@ -1,7 +1,19 @@
 
 /* ===============
+  Normalize - Alternative to CSS resets
+  https://necolas.github.io/normalize.css/
+=============== */
+
+@import 'normalize.css';
+
+
+/* ===============
   Structure
 =============== */
+
+html, body {
+    height: 100%;
+}
 
 .container {
     max-width: $grid-container-width;

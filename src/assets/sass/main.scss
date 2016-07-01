@@ -9,17 +9,19 @@
 // Global variables
 @import 'vars';
 
-// Third party sass libraries
+// Utils and helpers (mixins, functions, helper classes)
 @import 'vendors';
 
 // Utils and helpers (mixins, functions, helper classes)
 @import 'helpers';
+
+// ---
+
+// Fonts declaration
+@import 'fonts';
 
 // Generic common rules (layout, typography, global behaviors)
 @import 'base';
 
 // Project components (buttons, links, )
 @import 'components/**/*';
-
-// Project partials (navigation, hero, footer, article)
-@import 'partials/**/*';

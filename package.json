@@ -25,6 +25,7 @@
         "del": "*",
         "glob-all": "*",
         "node-notifier": "*",
+        "run-sequence": "*",
         "sass-module-importer": "*",
 
         "eslint-config-standard": "*",
@@ -34,7 +35,6 @@
         "gulp": "*",
         "gulp-changed": "*",
         "gulp-data": "*",
-        "gulp-file-include": "*",
         "gulp-htmlmin": "*",
         "gulp-imagemin": "*",
         "gulp-nunjucks": "*",

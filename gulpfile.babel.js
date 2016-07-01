@@ -1,8 +1,7 @@
 
-// IMPORTS
-
+// import packages
 const prefixer       = require('autoprefixer')
-const sync           = require('browser-sync')
+const browserSync    = require('browser-sync')
 const cssnano        = require('cssnano')
 const del            = require('del')
 const fs             = require('fs')
@@ -10,11 +9,11 @@ const notifier       = require('node-notifier')
 const glob           = require('glob-all')
 const path           = require('path')
 const moduleImporter = require('sass-module-importer')
+const runSequence    = require('run-sequence')
 
 const gulp           = require('gulp')
 const data           = require('gulp-data')
 const changed        = require('gulp-changed')
-const include        = require('gulp-file-include')
 const htmlmin        = require('gulp-htmlmin')
 const imagemin       = require('gulp-imagemin')
 const plumber        = require('gulp-plumber')
@@ -33,8 +32,8 @@ const uglify         = require('rollup-plugin-uglify')
 const eslint         = require('rollup-plugin-eslint')
 
 
-// VARS
-
+// global vars
+const serverPort = 8080;
 const paths = {
 	assets: './src/assets',
 	views: './src/views',
@@ -43,55 +42,54 @@ const paths = {
 }
 
 
-
-// ERROR HANDLER
-
+// errors handler
 const onError = function(error) {
-	notifier.notify({ 'title': 'Error', 'message': 'Compilation failed.' })
+	notifier.notify({
+        'title': 'Error',
+        'message': 'Compilation failed.'
+    })
 	console.log(error)
     this.emit('end')
 }
 
 
-
-// CLEAN
-
+// clean the dist folder
 gulp.task('clean', () => del(paths.dist))
 
 
-
-// HTML
-
-gulp.task('html', ['images'], () => {
-    return gulp.src(paths.views + '/*.{html,twig}')
+// html templating - nunjucks and data injection
+gulp.task('html', () => {
+    return gulp.src(paths.views + '/*.{html,twig,nunjucks}')
         .pipe(plumber({ errorHandler: onError }))
         .pipe(data(function(file) {
 			let pageName = path.basename(file.path, path.extname(file.path))
-			let globalData = fs.readFileSync(paths.data + '/_.json', 'utf-8') || {}
+
+            let globalData = fs.readFileSync(paths.data + '/_.json', 'utf-8') || {}
 			let pageData = fs.readFileSync(paths.data + '/' + pageName + '.json', 'utf-8') || {}
-			let jsonData = {
+
+            let jsonData = {
 				'_': JSON.parse(globalData),
 				pageName: JSON.parse(pageData)
 			}
+
 			return jsonData
 	    }))
         .pipe(nunjucks.compile())
-        .pipe(include({ prefix: '@', basepath: paths.dist + '/images/' }))
-        .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true, removeComments: true }))
+        .pipe(htmlmin({
+            collapseWhitespace: true,
+            minifyCSS: true,
+            removeComments: true
+        }))
 		.pipe(rename(function (path) {
-			if (path.basename == 'home') {
-				path.basename = 'index'
-			}
 			path.extname = '.html'
 			return path
 		}))
         .pipe(gulp.dest(paths.dist))
+        .pipe(server.reload({ stream: true }))
 })
 
 
-
-// JS
-
+// javascript compiler
 const read = {
 	sourceMap: true,
 	plugins: [
@@ -102,17 +100,10 @@ const read = {
 		uglify()
 	]
 }
-
-const write = {
-    format: 'iife',
-    sourceMap: true
-}
-
 const files = glob.sync([
 	paths.assets + '/js/*.js',
 	'!' + paths.assets + '/js/_*.js'
 ])
-
 gulp.task('js', () => {
 	let stream
 
@@ -121,24 +112,23 @@ gulp.task('js', () => {
 		stream = rollup
 	        .rollup(_read)
 	        .then(bundle => {
-
 	            // generate the bundle
-	            let files = bundle.generate(write)
+	            let files = bundle.generate({
+                    format: 'iife',
+                    sourceMap: true
+                })
 
 	            // write the files to dist
 	            fs.writeFileSync(paths.dist + '/js/' + path.basename(file).replace('.js', '.min.js'), files.code)
 	            fs.writeFileSync(paths.dist + '/maps/' + path.basename(file) + '.map', files.map.toString())
-
 	        })
 	})
 
-	return stream
+	return stream.pipe(server.reload({ stream: true }))
 })
 
 
-
-// SASS
-
+// sass compiler
 gulp.task('sass', () => {
 	return gulp.src([paths.assets + '/sass/*.scss', '!' + paths.assets + '/sass/_*.scss'])
 		.pipe(plumber({ errorHandler: onError }))
@@ -146,7 +136,9 @@ gulp.task('sass', () => {
 		.pipe(bulkSass())
 		.pipe(sass({ importer: moduleImporter() }))
 		.pipe(sass())
-		.pipe(postcss([ prefixer({ browsers: 'last 2 versions' }) ]))
+		.pipe(postcss([ prefixer({
+            browsers: '> 5%, last 3 versions, ie >= 8'
+        }) ]))
 		.pipe(postcss([ cssnano({ safe: true }) ]))
 		.pipe(rename(function (path) {
 			path.extname = '.min.css'
@@ -154,36 +146,31 @@ gulp.task('sass', () => {
 		}))
 		.pipe(maps.write('../maps', { addComment: false }))
 		.pipe(gulp.dest(paths.dist + '/css'))
+        .pipe(server.reload({ stream: true }))
 })
 
 
-
-// IMAGES
-
+// images compilation
 gulp.task('images', () => {
 	return gulp.src(paths.assets + '/images/**/*.{gif,jpg,png,svg}')
 		.pipe(plumber({ errorHandler: onError }))
 		.pipe(changed(paths.dist + '/images'))
 		.pipe(imagemin())
 		.pipe(gulp.dest(paths.dist + '/images'))
+        .pipe(server.reload({ stream: true }))
 })
 
 
-
-// ASSETS COPY
-
-const others = [
-    {
-        name: 'fonts',
-        src:  '/fonts/**/*',
-        dest: '/fonts'
-    }, {
-        name: 'favicon',
-        src:  '/favicon.{ico,png}',
-        dest: ''
-    }
-]
-
+// copy of static assets
+const others = [{
+    name: 'fonts',
+    src:  '/fonts/**/*',
+    dest: '/fonts'
+}, {
+    name: 'favicon',
+    src:  '/favicon.{ico,png}',
+    dest: ''
+}]
 others.forEach(object => {
     gulp.task(object.name, () => {
         return gulp.src(paths.assets + object.src)
@@ -193,12 +180,8 @@ others.forEach(object => {
 })
 
 
-
-// SERVER
-
-const server = sync.create()
-const reload = sync.reload
-
+// local dev. server
+const server = browserSync.create()
 const sendMaps = (req, res, next) => {
 	const filename = req.url.split('/').pop()
 	const extension = filename.split('.').pop()
@@ -209,44 +192,39 @@ const sendMaps = (req, res, next) => {
 
 	return next()
 }
-
-const options = {
-	notify: false,
+gulp.task('browser-sync', () => server.init({
+    notify: false,
+    port: serverPort,
 	startPath: '/index.html',
 	server: {
 		baseDir: 'build',
 		middleware: [
 	      sendMaps
 	    ]
-	},
-    watchOptions: {
-        ignored: '*.map'
-    }
-}
-
-gulp.task('server', () => setTimeout(function(){ sync(options) }, 1000))
+	}
+}))
 
 
-
-// WATCH
-
+// watcher
 gulp.task('watch', () => {
-    gulp.watch([paths.views + '/**/*.{html,twig}', paths.data + '/**/*.json'], ['html', reload])
-    gulp.watch(paths.assets + '/sass/**/*.scss', ['sass', reload])
-    gulp.watch(paths.assets + '/js/**/*.js', ['js', reload])
-    gulp.watch(paths.assets + '/images/**/*.{gif,jpg,png,svg}', ['images', reload])
+    gulp.watch([paths.views + '/**/*.{html,twig,nunjucks}', paths.data + '/**/*.json'], ['html'])
+    gulp.watch(paths.assets + '/sass/**/*.scss', ['sass'])
+    gulp.watch(paths.assets + '/js/**/*.js', ['js'])
+    gulp.watch(paths.assets + '/images/**/*.{gif,jpg,png,svg}', ['images'])
 })
 
 
-
-// BUILD AND DEFAULT TASKS
-
-gulp.task('build', ['clean'], () => {
+// build gulp task
+gulp.task('build', ['clean'], (callback) => {
     fs.mkdirSync(paths.dist)
     fs.mkdirSync(paths.dist + '/js')
     fs.mkdirSync(paths.dist + '/maps')
 	fs.mkdirSync(paths.dist + '/images')
-    gulp.start('html', 'sass', 'js', 'images', 'fonts', 'favicon')
+    runSequence('html', 'sass', 'js', 'images', 'fonts', 'favicon', callback)
 })
 
-gulp.task('default', ['build', 'server', 'watch'])
+
+// default task
+gulp.task('default', function (callback) {
+    runSequence('build', 'browser-sync', 'watch', callback)
+})

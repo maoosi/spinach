@@ -3,19 +3,26 @@
 
 
 # SASS & NPM
-/node_modules
+node_modules/
+npm-debug.log
 .sass-cache
 
 
 # COMPOSER
-/vendor
+vendor/
 
 
 # LARAVEL PHP
-/public/storage
+public/storage/
 .env
 Homestead.yaml
 Homestead.json
+
+
+# TESTING
+selenium-debug.log
+test/unit/coverage
+test/e2e/reports
 
 
 # OS FILES

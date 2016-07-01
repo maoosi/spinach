@@ -3,7 +3,14 @@
     "plugins": [
         "standard"
     ],
+    "globals": {
+        "Modernizr": true,
+        "Event": true,
+        "CustomEvent": true
+    },
     "rules": {
-        "indent": ["error", 4]
+        "padded-blocks": ["error", { "classes": "always" }],
+        "indent": ["error", 4],
+        "arrow-parens": 0
     }
 }
