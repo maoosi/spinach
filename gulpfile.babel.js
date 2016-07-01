@@ -23,6 +23,7 @@ const nunjucks       = require('gulp-nunjucks')
 const bulkSass       = require('gulp-sass-bulk-import')
 const rename         = require('gulp-rename')
 const uglify         = require('gulp-uglify')
+const strip          = require('gulp-strip-comments')
 
 const webpack        = require('gulp-webpack')
 
@@ -70,6 +71,9 @@ gulp.task('html', () => {
 			return jsonData
 	    }))
         .pipe(nunjucks.compile())
+        .pipe(strip({
+            safe: true
+        }))
         .pipe(htmlmin({
             collapseWhitespace: true,
             minifyCSS: true,
@@ -149,12 +153,8 @@ gulp.task('images', () => {
 
 // copy of static assets
 const others = [{
-    name: 'fonts',
-    src:  '/fonts/**/*',
-    dest: '/fonts'
-}, {
-    name: 'favicon',
-    src:  '/favicon.{ico,png}',
+    name: 'static',
+    src:  '/static/**/*',
     dest: ''
 }]
 others.forEach(object => {
@@ -192,7 +192,7 @@ gulp.task('build', ['clean'], (callback) => {
     fs.mkdirSync(paths.dist)
     fs.mkdirSync(paths.dist + '/js')
 	fs.mkdirSync(paths.dist + '/images')
-    runSequence('html', 'sass', 'js', 'images', 'fonts', 'favicon', callback)
+    runSequence('html', 'sass', 'js', 'images', 'static', callback)
 })
 
 

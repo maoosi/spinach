@@ -51,6 +51,7 @@
         "gulp-rename": "*",
         "gulp-sass": "*",
         "gulp-sass-bulk-import": "*",
+        "gulp-strip-comments": "*",
 
         "normalize.css": "*",
 
