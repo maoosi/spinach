@@ -19,17 +19,11 @@ const imagemin       = require('gulp-imagemin')
 const plumber        = require('gulp-plumber')
 const postcss        = require('gulp-postcss')
 const sass           = require('gulp-sass')
-const maps           = require('gulp-sourcemaps')
 const nunjucks       = require('gulp-nunjucks')
-const bulkSass       = require('gulp-sass-bulk-import');
-const rename         = require('gulp-rename');
+const bulkSass       = require('gulp-sass-bulk-import')
+const rename         = require('gulp-rename')
 
-const rollup         = require('rollup')
-const babel          = require('rollup-plugin-babel')
-const commonjs       = require('rollup-plugin-commonjs')
-const resolve        = require('rollup-plugin-node-resolve')
-const uglify         = require('rollup-plugin-uglify')
-const eslint         = require('rollup-plugin-eslint')
+const webpack        = require('gulp-webpack')
 
 
 // global vars
@@ -90,49 +84,34 @@ gulp.task('html', () => {
 
 
 // javascript compiler
-const read = {
-	sourceMap: true,
-	plugins: [
-		eslint(),
-		resolve({ jsnext: true, main: true }),
-		commonjs(),
-		babel({
-            exclude: ['*.json'],
-			presets: ['es2015-rollup', 'stage-0'],
-			babelrc: false
-        }),
-		uglify()
-	]
-}
-const files = glob.sync([
-	paths.assets + '/js/*.js',
-	'!' + paths.assets + '/js/_*.js'
-])
-const write = {
-    format: 'iife',
-    sourceMap: true
-}
 gulp.task('js', () => {
-	let stream
-
-	files.forEach(file => {
-		let _read = Object.assign({ entry: file.replace('./', '') }, read)
-		stream = rollup
-	        .rollup(_read)
-	        .then(bundle => {
-	            // generate the bundle
-	            let files = bundle.generate(write)
-
-	            // write the files to dist
-	            fs.writeFileSync(paths.dist + '/js/' + path.basename(file).replace('.js', '.min.js'), files.code)
-	            fs.writeFileSync(paths.dist + '/maps/' + path.basename(file) + '.map', files.map.toString())
-
-                // reload server
-                server.reload()
-	        })
-	})
-
-	return stream
+    gulp.src([paths.assets + '/js/*.js', '!' + paths.assets + '/js/_*.js'])
+        .pipe(webpack({
+            output: {
+                filename: '[name].min.js',
+            },
+            resolveLoader: {
+                fallback: [path.join(__dirname, '../node_modules')]
+            },
+            module: {
+                preLoaders: [
+                    {
+                        test: /\.js$/,
+                        loader: 'eslint',
+                        exclude: /(node_modules)/
+                    }
+                ],
+                loaders: [
+                    {
+                        test: /\.js$/,
+                        loader: 'babel',
+                        exclude: /node_modules/
+                    },
+                ]
+            }
+        }))
+        .pipe(gulp.dest(paths.dist + '/js/'))
+        .pipe(server.reload({ stream: true }));
 })
 
 
@@ -140,7 +119,6 @@ gulp.task('js', () => {
 gulp.task('sass', () => {
 	return gulp.src([paths.assets + '/sass/*.scss', '!' + paths.assets + '/sass/_*.scss'])
 		.pipe(plumber({ errorHandler: onError }))
-		.pipe(maps.init())
 		.pipe(bulkSass())
 		.pipe(sass({ importer: moduleImporter() }))
 		.pipe(sass())
@@ -152,7 +130,6 @@ gulp.task('sass', () => {
 			path.extname = '.min.css'
 			return path;
 		}))
-		.pipe(maps.write('../maps', { addComment: false }))
 		.pipe(gulp.dest(paths.dist + '/css'))
         .pipe(server.reload({ stream: true }))
 })

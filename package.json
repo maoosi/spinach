@@ -18,9 +18,13 @@
 
     "devDependencies": {
 
+        "babel-core": "*",
+        "babel-loader": "*",
+        "babel-plugin-transform-runtime": "*",
+        "babel-preset-es2015": "*",
+        "babel-preset-stage-2": "*",
+
         "autoprefixer": "*",
-        "babel-preset-es2015-rollup": "*",
-        "babel-preset-stage-0": "*",
         "browser-sync": "*",
         "cssnano": "*",
         "del": "*",
@@ -29,7 +33,9 @@
         "run-sequence": "*",
         "sass-module-importer": "*",
 
+        "eslint": "*",
         "eslint-config-standard": "*",
+        "eslint-loader": "*",
         "eslint-plugin-promise": "*",
         "eslint-plugin-standard": "*",
 
@@ -44,17 +50,11 @@
         "gulp-rename": "*",
         "gulp-sass": "*",
         "gulp-sass-bulk-import": "*",
-        "gulp-sourcemaps": "*",
 
-        "rollup": "*",
-        "rollup-plugin-babel": "*",
-        "rollup-plugin-commonjs": "*",
-        "rollup-plugin-eslint": "*",
-        "rollup-plugin-node-resolve": "*",
-        "rollup-plugin-uglify": "*",
+        "normalize.css": "*",
 
-        "gridle": "*",
-        "normalize.css": "*"
+        "gulp-webpack": "*",
+        "exports-loader": "*"
 
     }
 }
