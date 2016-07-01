@@ -11,13 +11,44 @@
   Structure
 =============== */
 
+html {
+    font-size: $base-font-size;
+}
+
 html, body {
     height: 100%;
 }
 
-.container {
-    max-width: $grid-container-width;
-    margin: 0 auto;
+noscript {
+    background-color: $black;
+    color: $white;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999999;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: .25rem;
+
+    a {
+        color: $white;
+        text-decoration: underline;
+
+        &:hover, &:focus {
+            color: $white;
+            text-decoration: underline;
+        }
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+::selection {
+    background-color: $black;
+    color: $white;
 }
 
 
@@ -27,6 +58,7 @@ html, body {
 
 a {
     outline: 0;
+    text-decoration: none;
 }
 
 
@@ -41,14 +73,25 @@ h4,
 h5,
 h6 {
     font-size: 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+._h1,
+._h2,
+._h3,
+._h4,
+._h5,
+._h6 {
+    // Default titles styles
 }
 
 @each $breakpoint, $headings in $headings-sizes {
-	@include gridle_state($breakpoint) {
+	// @include gridle_state($breakpoint) {
 		@each $heading, $font-size in $headings {
-			.#{$heading} {
+			._#{$heading} {
 				font-size: $font-size;
 			}
 		}
-	}
+	// }
 }

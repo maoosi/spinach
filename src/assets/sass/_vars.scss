@@ -5,36 +5,38 @@
 
 // Colors
 $black: #000;
+$white: #fff;
+
+// Body
+$body-font-size: 100%;
 
 // Media queries
 $breakpoints: (
-    mobile: 0px,
-    tablet: 640px,
+    small: 320px,
+    medium: 640px,
     large: 1024px,
     xlarge: 1200px,
     xxlarge: 1440px,
 );
 
-// Grid system
-$grid-columns: 12;
-$grid-gutter: 20px;
-$grid-container-width: 1200px;
-
 // Typography
-$typo-font-size: 100%;
-$typo-lineheight: 1.5;
+$typo-font-size: 1rem;
+$typo-line-height: 1.4;
+$typo-font-weight: normal;
+$typo-font-style: normal;
 $typo-color: $black;
+$typo-font-family: Arial, sans-serif;
 
 // Headings
 $headings-sizes: (
-    small: (
-    	'h1': 40rem,
-        'h2': 35rem,
-        'h3': 30rem
+    default: (
+        'h1': 4rem,
+        'h2': 1.75rem,
+        'h3': 1.5rem
     ),
     medium: (
-    	'h1': 55rem,
-        'h2': 50rem,
-        'h3': 45rem
+        'h1': 5rem,
+        'h2': 2.25rem,
+        'h3': 2rem
     )
 );

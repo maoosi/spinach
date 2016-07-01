@@ -3,4 +3,25 @@
   Fonts
 =============== */
 
-// Your code here
+/*@font-face {
+    font-family: 'Gravur Condensed Web';
+    src: url('../fonts/lineto-gravurcondensed-regular.eot');
+    src: local('☺︎'),
+        url('../fonts/lineto-gravurcondensed-regular.woff') format('woff'),
+        url('../fonts/lineto-gravurcondensed-regular.ttf') format('truetype'),
+        url('../fonts/lineto-gravurcondensed-regular.svg#lineto-gravurcondensed-regular') format('svg');
+    font-weight: normal;
+	font-style: normal;
+}
+
+// Android 2.2-2.3 Fix
+@media screen and (max-device-width: 480px) {
+    @font-face {
+        font-family: 'Gravur Condensed Web';
+        src: url('../fonts/lineto-gravurcondensed-regular.woff') format('woff'),
+            url('../fonts/lineto-gravurcondensed-regular.ttf') format('truetype'),
+            url('../fonts/lineto-gravurcondensed-regular.svg#lineto-gravurcondensed-regular') format('svg');
+        font-weight: normal;
+    	font-style: normal;
+    }
+}*/
