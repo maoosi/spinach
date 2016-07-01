@@ -22,6 +22,7 @@ const sass           = require('gulp-sass')
 const nunjucks       = require('gulp-nunjucks')
 const bulkSass       = require('gulp-sass-bulk-import')
 const rename         = require('gulp-rename')
+const uglify         = require('gulp-uglify')
 
 const webpack        = require('gulp-webpack')
 
@@ -82,7 +83,6 @@ gulp.task('html', () => {
         .pipe(server.reload({ stream: true }))
 })
 
-
 // javascript compiler
 gulp.task('js', () => {
     gulp.src([paths.assets + '/js/*.js', '!' + paths.assets + '/js/_*.js'])
@@ -98,7 +98,7 @@ gulp.task('js', () => {
                     {
                         test: /\.js$/,
                         loader: 'eslint',
-                        exclude: /(node_modules)/
+                        exclude: /(node_modules|libs)/
                     }
                 ],
                 loaders: [
@@ -110,6 +110,7 @@ gulp.task('js', () => {
                 ]
             }
         }))
+        .pipe(uglify())
         .pipe(gulp.dest(paths.dist + '/js/'))
         .pipe(server.reload({ stream: true }));
 })
@@ -167,25 +168,12 @@ others.forEach(object => {
 
 // local dev. server
 const server = browserSync.create()
-const sendMaps = (req, res, next) => {
-	const filename = req.url.split('/').pop()
-	const extension = filename.split('.').pop()
-
-	if(extension === 'css' || extension === 'js') {
-		res.setHeader('X-SourceMap', '/maps/' + filename + '.map')
-	}
-
-	return next()
-}
 gulp.task('browser-sync', () => server.init({
     notify: false,
     port: serverPort,
 	startPath: '/index.html',
 	server: {
-		baseDir: 'dist',
-		middleware: [
-	      sendMaps
-	    ]
+		baseDir: 'dist'
 	}
 }))
 
@@ -203,7 +191,6 @@ gulp.task('watch', () => {
 gulp.task('build', ['clean'], (callback) => {
     fs.mkdirSync(paths.dist)
     fs.mkdirSync(paths.dist + '/js')
-    fs.mkdirSync(paths.dist + '/maps')
 	fs.mkdirSync(paths.dist + '/images')
     runSequence('html', 'sass', 'js', 'images', 'fonts', 'favicon', callback)
 })

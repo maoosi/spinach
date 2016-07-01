@@ -44,6 +44,7 @@
         "gulp-data": "*",
         "gulp-htmlmin": "*",
         "gulp-imagemin": "*",
+        "gulp-uglify": "*",
         "gulp-nunjucks": "*",
         "gulp-plumber": "*",
         "gulp-postcss": "*",
