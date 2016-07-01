@@ -38,7 +38,7 @@ const paths = {
 	assets: './src/assets',
 	views: './src/views',
 	data: './src/data',
-	dist: './build'
+	dist: './dist'
 }
 
 
@@ -96,7 +96,11 @@ const read = {
 		eslint(),
 		resolve({ jsnext: true, main: true }),
 		commonjs(),
-		babel({ exclude: 'node_modules/**' }),
+		babel({
+            exclude: ['*.json'],
+			presets: ['es2015-rollup', 'stage-0'],
+			babelrc: false
+        }),
 		uglify()
 	]
 }
@@ -104,27 +108,31 @@ const files = glob.sync([
 	paths.assets + '/js/*.js',
 	'!' + paths.assets + '/js/_*.js'
 ])
+const write = {
+    format: 'iife',
+    sourceMap: true
+}
 gulp.task('js', () => {
 	let stream
 
 	files.forEach(file => {
-		let _read = Object.assign({ entry: file }, read)
+		let _read = Object.assign({ entry: file.replace('./', '') }, read)
 		stream = rollup
 	        .rollup(_read)
 	        .then(bundle => {
 	            // generate the bundle
-	            let files = bundle.generate({
-                    format: 'iife',
-                    sourceMap: true
-                })
+	            let files = bundle.generate(write)
 
 	            // write the files to dist
 	            fs.writeFileSync(paths.dist + '/js/' + path.basename(file).replace('.js', '.min.js'), files.code)
 	            fs.writeFileSync(paths.dist + '/maps/' + path.basename(file) + '.map', files.map.toString())
+
+                // reload server
+                server.reload()
 	        })
 	})
 
-	return stream.pipe(server.reload({ stream: true }))
+	return stream
 })
 
 
@@ -197,7 +205,7 @@ gulp.task('browser-sync', () => server.init({
     port: serverPort,
 	startPath: '/index.html',
 	server: {
-		baseDir: 'build',
+		baseDir: 'dist',
 		middleware: [
 	      sendMaps
 	    ]
