@@ -13,10 +13,30 @@
 
 html {
     font-size: $base-font-size;
+
+    @include gridle_state(medium_max) {
+        font-size: $base-font-size * 0.9;
+    }
+
+    @include gridle_state(short) {
+        font-size: $base-font-size * 0.9;
+    }
 }
 
 html, body {
     height: 100%;
+}
+
+body {
+    font-family: $typo-font-family;
+    font-size: $typo-font-size;
+    font-style: $typo-font-style;
+    font-weight: $typo-font-weight;
+    line-height: $typo-line-height;
+    letter-spacing: $typo-letter-spacing;
+    text-transform: $typo-text-transform;
+    color: $typo-color;
+    background-color: $body-bgColor;
 }
 
 noscript {
@@ -83,15 +103,15 @@ h6 {
 ._h4,
 ._h5,
 ._h6 {
-    // Default titles styles
+    @include headingsStyle();
 }
 
 @each $breakpoint, $headings in $headings-sizes {
-	// @include gridle_state($breakpoint) {
+	@include gridle_state($breakpoint) {
 		@each $heading, $font-size in $headings {
 			._#{$heading} {
 				font-size: $font-size;
 			}
 		}
-	// }
+	}
 }

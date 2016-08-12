@@ -5,8 +5,8 @@
 ## Build Setup
 
 ``` bash
-# install dependencies
-npm install
+# install & fix dependencies
+npm update --save
 
 # serve with hot reload at localhost:8080
 gulp

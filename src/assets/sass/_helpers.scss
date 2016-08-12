@@ -4,6 +4,16 @@
   Mixins
 =============== */
 
+@mixin headingsStyle() {
+    font-family: $headings-font-family;
+    font-style: $headings-font-style;
+    font-weight: $headings-font-weight;
+    line-height: $headings-line-height;
+    color: $headings-color;
+    letter-spacing: $headings-letter-spacing;
+    text-transform: $headings-text-transform;
+}
+
 @mixin blurryFix() {
     -webkit-filter: blur(0);
     -webkit-font-smoothing: subpixel-antialiased;
@@ -32,14 +42,34 @@
   Helper classes
 =============== */
 
-._text-left {
-    text-align: left;
-}
-
 ._text-center {
     text-align: center;
 }
 
 ._text-right {
     text-align: right;
+}
+
+._text-left {
+    text-align: left;
+}
+
+@each $breakpoint, $width in $breakpoints {
+    ._text-center\@#{$breakpoint} {
+        @include gridle_state($breakpoint) {
+            text-align: center;
+        }
+    }
+
+    ._text-right\@#{$breakpoint} {
+        @include gridle_state($breakpoint) {
+            text-align: right;
+        }
+    }
+
+    ._text-left\@#{$breakpoint} {
+        @include gridle_state($breakpoint) {
+            text-align: left;
+        }
+    }
 }

@@ -1,5 +1,44 @@
 
 /* ===============
-  Vendor name
-  Url
+  Gridle - Grid system
+  http://gridle.org
 =============== */
+
+@import 'gridle/sass/gridle/_gridle.scss';
+
+@include gridle_setup((
+    context : $grid-columns,
+    gutter-width : $grid-gutter
+));
+
+@include gridle_register_state(short, (
+    query : 'only screen and (max-height: #{$breakpointShort})'
+));
+
+@each $breakpoint, $width in $breakpoints {
+    @include gridle_register_state($breakpoint, (
+        min-width: $width
+    ));
+
+    @include gridle_register_state('#{$breakpoint}_max', (
+        max-width: $width - 1
+    ));
+}
+
+@include gridle_generate_classes();
+
+.gr-container {
+    @include gridle_container();
+    overflow-x: hidden;
+}
+
+.row {
+    max-width: $grid-container-width;
+    margin: 0 auto;
+}
+
+.row-full {
+    width: 100%;
+    max-width: none;
+    margin: 0 auto;
+}

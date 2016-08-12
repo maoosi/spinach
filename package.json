@@ -16,7 +16,7 @@
         "url": "https://xxx.git/issues"
     },
 
-    "devDependencies": {
+    "dependencies": {
 
         "babel-core": "*",
         "babel-loader": "*",
@@ -54,6 +54,7 @@
         "gulp-strip-comments": "*",
 
         "normalize.css": "*",
+        "gridle": "*",
 
         "gulp-webpack": "*",
         "exports-loader": "*"

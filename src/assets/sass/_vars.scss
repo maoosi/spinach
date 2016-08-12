@@ -8,7 +8,8 @@ $black: #000;
 $white: #fff;
 
 // Body
-$body-font-size: 100%;
+$body-bgColor: $white;
+$base-font-size: 100%;
 
 // Media queries
 $breakpoints: (
@@ -17,7 +18,14 @@ $breakpoints: (
     large: 1024px,
     xlarge: 1200px,
     xxlarge: 1440px,
+    xxxlarge: 1840px
 );
+$breakpointShort: 640px;
+
+// Grid system
+$grid-columns: 12;
+$grid-gutter: 20px;
+$grid-container-width: 960px;
 
 // Typography
 $typo-font-size: 1rem;
@@ -26,8 +34,18 @@ $typo-font-weight: normal;
 $typo-font-style: normal;
 $typo-color: $black;
 $typo-font-family: Arial, sans-serif;
+$typo-letter-spacing: 0px;
+$typo-text-transform: none;
 
-// Headings
+// headings
+$headings-line-height: 1.3;
+$headings-font-weight: normal;
+$headings-font-style: normal;
+$headings-color: $typo-color;
+$headings-font-family: $typo-font-family;
+$headings-letter-spacing: none;
+$headings-text-transform: none;
+
 $headings-sizes: (
     default: (
         'h1': 4rem,
