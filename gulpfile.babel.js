@@ -64,9 +64,10 @@ gulp.task('html', () => {
 			let pageData = fs.readFileSync(paths.data + '/' + pageName + '.json', 'utf-8') || {}
 
             let jsonData = {
-				'_': JSON.parse(globalData),
-				pageName: JSON.parse(pageData)
+				'_': JSON.parse(globalData)
 			}
+            
+            jsonData[pageName] = JSON.parse(pageData)
 
 			return jsonData
 	    }))
